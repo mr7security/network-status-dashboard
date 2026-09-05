@@ -1,0 +1,213 @@
+/* Monitor de red — tema oscuro de sala tecnica.
+   Vista normal: una tarjeta ancha por grupo, para seguimiento.
+   Modo TV: rejilla compacta, legible desde lejos. */
+
+:root{
+  --fondo:#0a0e14; --tarjeta:#121a24; --tarjeta2:#0f1620; --borde:#1e2a38;
+  --texto:#e6edf3; --apagado:#8b98a5;
+  --ok:#22c55e; --aviso:#f59e0b; --error:#ef4444; --azul:#38bdf8;
+  --mant:#3b82f6;
+  --sombra:0 2px 14px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--fondo); color:var(--texto);
+  font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  padding:14px 18px 28px; min-height:100vh;
+}
+
+/* ---------- cabecera ---------- */
+header{
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  border-bottom:1px solid var(--borde); padding-bottom:12px; margin-bottom:16px;
+}
+#logo{height:42px; width:auto; flex:none; border-radius:6px;
+      background:#fff; padding:3px 6px}
+h1{font-size:20px; letter-spacing:2px; font-weight:600; white-space:nowrap;
+   border-left:3px solid var(--azul); padding-left:14px}
+.chips{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-left:auto}
+.chip{
+  background:var(--tarjeta); border:1px solid var(--borde); border-radius:8px;
+  padding:6px 12px; font-size:13px; display:flex; gap:8px; align-items:center;
+}
+.chip b{font-size:17px; font-variant-numeric:tabular-nums}
+.chip.ok b{color:var(--ok)}       .chip.aviso b{color:var(--aviso)}
+.chip.error b{color:var(--error)} .chip.azul b{color:var(--azul)}
+.chip.mant b{color:var(--mant)}
+#reloj{font-size:19px; font-variant-numeric:tabular-nums; color:var(--azul)}
+button{
+  background:var(--tarjeta); color:var(--texto); border:1px solid var(--borde);
+  border-radius:8px; padding:7px 14px; cursor:pointer; font-size:13px;
+}
+button:hover{border-color:var(--azul)}
+button:disabled{opacity:.5; cursor:progress}
+
+.banner{
+  display:none; padding:8px 14px; border-radius:8px; margin-bottom:14px;
+  font-size:14px; border:1px solid var(--aviso); background:#2b2210;
+  color:#ffe6b8;
+}
+.banner.malo{border-color:var(--error); background:#3b1113; color:#ffd7d7}
+.banner code{background:#0d1017; border:1px solid var(--borde);
+             border-radius:4px; padding:1px 6px; font-size:12.5px}
+.banner a{color:inherit}
+
+/* ---------- rejilla ---------- */
+#rejilla{display:grid; gap:14px; grid-template-columns:minmax(0,1fr)}
+
+.grupo-tarjeta{
+  background:linear-gradient(180deg,var(--tarjeta),var(--tarjeta2));
+  border:1px solid var(--borde); border-left:5px solid var(--ok);
+  border-radius:12px; padding:14px 16px; box-shadow:var(--sombra);
+  display:flex; flex-direction:column; gap:10px; min-width:0;
+}
+.grupo-tarjeta.aviso{border-left-color:var(--aviso)}
+.grupo-tarjeta.error{border-left-color:var(--error);
+  background:linear-gradient(180deg,#1b1216,var(--tarjeta2))}
+
+.cab{display:flex; align-items:center; gap:16px; flex-wrap:wrap}
+h2{font-size:17px; font-weight:600; letter-spacing:.6px;
+   display:flex; align-items:center; gap:9px; flex:none}
+h2 small{color:var(--apagado); font-weight:400; font-size:12px}
+.led{width:11px;height:11px;border-radius:50%;background:var(--ok);flex:none}
+.aviso .led{background:var(--aviso)}
+.error .led{background:var(--error); animation:latido 1.4s infinite}
+@keyframes latido{0%,100%{opacity:1}50%{opacity:.25}}
+
+.grande{font-size:34px; font-weight:700; line-height:.95;
+        font-variant-numeric:tabular-nums}
+.grande span{font-size:17px; font-weight:500; color:var(--apagado); margin-left:3px}
+.grande.ok{color:var(--ok)} .grande.aviso{color:var(--aviso)}
+.grande.error{color:var(--error)}
+.medida{display:flex; flex-direction:column; align-items:flex-end;
+        gap:2px; margin-left:auto}
+canvas.spark{width:190px; height:34px; display:block; flex:none}
+
+.fallos{display:flex; gap:7px; flex-wrap:wrap; flex:1 1 240px}
+.etq{
+  font-size:11px; background:#0d141d; border:1px solid var(--borde);
+  border-radius:6px; padding:3px 8px; color:var(--apagado);
+}
+.etq b{color:var(--texto); font-variant-numeric:tabular-nums}
+.etq.mal{border-color:#5b2222; color:#ffc9c9}
+.etq.mal b{color:var(--error)}
+
+.barra{display:flex; height:8px; border-radius:5px; overflow:hidden;
+       background:#0a0f16}
+.barra i{display:block; height:100%}
+.barra .b-ok{background:var(--ok)}      .barra .b-aviso{background:var(--aviso)}
+.barra .b-error{background:var(--error)} .barra .b-mant{background:var(--mant)}
+
+.resumen-linea{
+  font-size:12px; color:var(--apagado); display:flex; gap:16px; flex-wrap:wrap;
+  border-top:1px solid var(--borde); padding-top:8px;
+}
+.resumen-linea b{font-variant-numeric:tabular-nums}
+
+/* ---------- grupos plegables ---------- */
+.bloques{display:flex; flex-direction:column; gap:6px; min-width:0}
+details.bloque{
+  background:#0d141d; border:1px solid var(--borde); border-radius:8px;
+  min-width:0; overflow:hidden;
+}
+details.bloque[open]{border-color:#2c3d50}
+details.bloque summary{
+  cursor:pointer; padding:7px 12px; font-size:13.5px; list-style:none;
+  display:flex; align-items:center; gap:10px; user-select:none;
+}
+details.bloque summary::-webkit-details-marker{display:none}
+details.bloque summary::before{content:"▸"; color:var(--apagado);
+  transition:transform .15s; display:inline-block}
+details.bloque[open] summary::before{transform:rotate(90deg)}
+details.bloque summary .n{margin-left:auto; display:flex; gap:8px;
+  align-items:center}
+.pastilla{font-size:11.5px; border-radius:5px; padding:1px 8px;
+          font-variant-numeric:tabular-nums}
+.pastilla.error{background:#3b1113; color:#ffb4b4; border:1px solid #6b2226}
+.pastilla.aviso{background:#3a2c10; color:#ffd79a; border:1px solid #6b5222}
+.pastilla.crit {background:#4a1116; color:#ffd7d7; border:1px solid #8b2b2b}
+.pastilla.mant {background:#10233f; color:#bcd8ff; border:1px solid #2a4d7a}
+
+/* ---------- tabla de equipos ---------- */
+table.equipos{width:100%; border-collapse:collapse; font-size:12.5px;
+              border-top:1px solid var(--borde); table-layout:fixed}
+table.equipos col.c-nom{width:28%}
+table.equipos col.c-ip{width:12%}
+table.equipos col.c-tipo{width:12%}
+table.equipos col.c-detalle{width:29%}
+table.equipos col.c-desde{width:12%}
+table.equipos col.c-acc{width:7%}
+table.equipos th{
+  text-align:left; font-weight:500; color:var(--apagado); font-size:11px;
+  text-transform:uppercase; letter-spacing:.6px; padding:6px 12px 4px;
+}
+table.equipos td{padding:4px 12px; border-top:1px solid #17202b}
+table.equipos td, table.equipos th{overflow:hidden; text-overflow:ellipsis;
+                                   white-space:nowrap}
+table.equipos tr:hover td{background:#141d28}
+table.equipos .t-ip,
+table.equipos .t-desde{font-variant-numeric:tabular-nums; color:var(--apagado)}
+table.equipos .t-desde{text-align:right}
+table.equipos .t-detalle{color:var(--apagado)}
+table.equipos tr.critico .t-nom{color:#ffd7d7; font-weight:600}
+table.equipos tr.caido .t-detalle{color:var(--error)}
+table.equipos tr.aviso .t-detalle{color:var(--aviso)}
+table.equipos tr.mantenimiento.t-nom{color:#bcd8ff}
+table.equipos tr.mantenimiento.t-detalle{color:var(--mant)}
+.t-acc{text-align:right; white-space:nowrap}
+.mas{color:var(--apagado); font-size:11.5px; padding:4px 12px}
+
+/* ---------- botones de mantenimiento ---------- */
+.btn-mant{
+  background:none; border:1px solid transparent; color:var(--apagado);
+  border-radius:5px; padding:0 6px; font-size:13px; line-height:1.6;
+}
+.btn-mant:hover{border-color:var(--mant); color:var(--mant)}
+tr.mantenimiento .btn-mant{color:var(--mant); border-color:#2a4d7a}
+#menu-mant{
+  position:absolute; z-index:50; display:none; background:var(--tarjeta);
+  border:1px solid var(--mant); border-radius:8px; padding:6px;
+  box-shadow:0 6px 20px rgba(0,0,0,.6); min-width:180px;
+}
+#menu-mant .tit{font-size:11px; color:var(--apagado); padding:3px 8px 6px}
+#menu-mant button{display:block; width:100%; text-align:left; border:none;
+  background:none; color:var(--texto); padding:6px 9px; border-radius:6px;
+  font-size:13px}
+#menu-mant button:hover{background:#1b2938; border:none}
+
+/* ---------- grupo sin incidencias ---------- */
+.grupo-tarjeta.compacta{flex-direction:row; align-items:center; gap:12px;
+  padding:9px 16px; border-left-color:var(--ok)}
+.grupo-tarjeta.compacta b{font-size:15px; letter-spacing:.5px}
+.grupo-tarjeta.compacta .txt{color:var(--apagado); font-size:12.5px}
+.grupo-tarjeta.compacta .pct{margin-left:auto; color:var(--ok); font-weight:600;
+  font-variant-numeric:tabular-nums}
+
+footer{margin-top:18px; color:var(--apagado); font-size:12px; text-align:center}
+
+/* ---------- Modo TV ---------- */
+body.tv{padding:10px 14px}
+body.tv h1{font-size:30px}
+body.tv #logo{height:56px}
+body.tv .chip{font-size:16px; padding:8px 15px}
+body.tv .chip b{font-size:23px}
+body.tv #reloj{font-size:26px}
+body.tv #btn-csv{display:none}
+body.tv #rejilla{grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px}
+body.tv .grupo-tarjeta{padding:12px 14px; gap:9px}
+body.tv h2{font-size:20px}
+body.tv .grande{font-size:48px}
+body.tv .bloques, body.tv .resumen-linea, body.tv .fallos,
+body.tv canvas.spark, body.tv footer{display:none}
+body.tv .cab{gap:10px}
+body.tv .medida{margin-left:auto}
+body.tv .lista-tv{display:flex; flex-direction:column; gap:5px}
+body.tv .lista-tv div{display:flex; gap:8px; align-items:center; font-size:14px}
+body.tv .lista-tv i{width:7px;height:7px;border-radius:50%;
+  background:var(--error);flex:none}
+body.tv .lista-tv .aviso i{background:var(--aviso)}
+body.tv .lista-tv .nom{overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap}
+body.tv .lista-tv .desde{margin-left:auto; color:var(--apagado); font-size:13px}
+body.tv .lista-tv .critico .nom{color:#ffd7d7; font-weight:600}
+.todo-ok{color:var(--ok); font-size:13px}

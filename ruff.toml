@@ -1,0 +1,17 @@
+# Configuracion de lint del proyecto.
+# Es un monitor de red: un equipo que no responde, una sonda que revienta o un
+# objeto corrupto en la base del Dude NUNCA deben tumbar el barrido. Por eso
+# las capturas amplias de excepcion son deliberadas.
+target-version = "py39"
+line-length = 110
+
+[lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = [
+    "BLE001",  # captura amplia deliberada: aislar el fallo de un equipo o sonda
+    "S110",    # try/except/pass deliberado en el mismo caso
+    "SIM105",  # idem: la forma explicita se lee mejor aqui
+    "UP031",   # formateo con %: es el estilo del proyecto y es valido
+    "B904",    # raise sin "from": el contexto original no aporta aqui
+    "E702",    # ; en linea: usado a proposito en tablas de constantes cortas
+]

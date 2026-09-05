@@ -1,0 +1,46 @@
+# Configuracion real: NUNCA se versiona
+# config.json lleva las credenciales del RouterOS; reglas.json describe tu red.
+config.json
+reglas.json
+!config.json.example
+!reglas.json.example
+
+# Copia local de la base del Dude e inventarios exportados
+copia-dude/
+*.db
+*.db-wal
+*.db-shm
+Devices.csv
+equipos.json
+dump_dude*.json
+
+# Logo corporativo opcional
+logo.jpg
+logo.jpeg
+logo.png
+logo.svg
+
+# Byte-compiled
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual envs
+venv/
+.venv/
+env/
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Salida en ejecucion
+*.log
+*.bak
+*.tmp
+
+# OS / editores
+.DS_Store
+.idea/
+.vscode/

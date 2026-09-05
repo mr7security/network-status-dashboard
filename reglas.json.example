@@ -1,0 +1,73 @@
+{
+  "_comentario": [
+    "Clasificacion declarativa. Copia este fichero a reglas.json y adaptalo:",
+    "reglas.json esta en .gitignore porque describe tu red.",
+    "",
+    "Se aplican TODAS las reglas que casen, en orden: las de abajo pisan las",
+    "etiquetas de las de arriba. Por eso se va de lo general (la sede, por el",
+    "segundo octeto) a lo particular (un equipo concreto por su nombre).",
+    "",
+    "Condiciones dentro de 'cuando' (deben cumplirse todas):",
+    "  red        una subred CIDR o una lista de ellas",
+    "  octeto1..4 valor o lista de valores de ese octeto",
+    "  nombre     expresion regular contra el nombre del equipo",
+    "  etiqueta   etiquetas que el equipo ya debe llevar",
+    "  origen     de que fuente vino (csv_dude, json, simulada)",
+    "",
+    "Sondas: icmp, http, https, tcp:PUERTO, snmp, tls:PUERTO, dns:NOMBRE",
+    "",
+    "Prueba los cambios sin aplicarlos:  python3 panel.py reglas",
+    "Y cuando cuadren:                   python3 panel.py reglas --guardar"
+  ],
+
+  "reglas": [
+    { "_": "----- SEDES: normalmente el segundo octeto de un plan 10.x -----" },
+
+    { "cuando": {"octeto2": ["0", "100"]}, "etiquetas": {"sede": "SEDE-A"} },
+    { "cuando": {"octeto2": ["1", "8"]},   "etiquetas": {"sede": "SEDE-B"} },
+    { "cuando": {"octeto2": "2"},          "etiquetas": {"sede": "SEDE-C"} },
+    { "cuando": {"octeto2": "50"},         "etiquetas": {"sede": "CENTRAL"} },
+    { "cuando": {"red": "172.16.0.0/16"},
+      "etiquetas": {"sede": "ENLACES", "funcion": "radioenlaces", "critico": "si"},
+      "sondas": ["icmp", "snmp"] },
+
+    { "_": "----- FUNCION: el tercer octeto suele ser el numero de VLAN -----" },
+
+    { "cuando": {"octeto3": ["0", "1", "2"]},
+      "etiquetas": {"funcion": "red", "critico": "si"},
+      "sondas": ["icmp", "snmp"] },
+    { "cuando": {"octeto3": ["150", "199"]},
+      "etiquetas": {"funcion": "switches", "critico": "si"},
+      "sondas": ["icmp", "snmp"] },
+    { "cuando": {"octeto3": ["200", "210"]},
+      "etiquetas": {"funcion": "servidores", "critico": "si"},
+      "sondas": ["icmp", "tcp:22"] },
+    { "cuando": {"octeto3": ["220", "230"]},
+      "etiquetas": {"funcion": "virtualizacion", "critico": "si"},
+      "sondas": ["icmp", "https"] },
+    { "cuando": {"octeto3": ["30", "31"]},
+      "etiquetas": {"funcion": "camaras"},
+      "sondas": ["icmp", "http"] },
+    { "cuando": {"octeto3": ["24", "25", "26"]},
+      "etiquetas": {"funcion": "wifi"},
+      "sondas": ["icmp", "http"] },
+    { "cuando": {"octeto3": "10"}, "etiquetas": {"funcion": "voip"} },
+    { "cuando": {"octeto3": "12"}, "etiquetas": {"funcion": "puestos"} },
+    { "cuando": {"octeto3": "13"}, "etiquetas": {"funcion": "impresoras"} },
+    { "cuando": {"octeto3": ["14", "18"]}, "etiquetas": {"funcion": "produccion"} },
+    { "cuando": {"octeto3": "35"}, "etiquetas": {"funcion": "externos"} },
+
+    { "_": "----- EXCEPCIONES POR NOMBRE: van al final para que pisen -----" },
+
+    { "cuando": {"nombre": "(?i)\\b(core|firewall|fortigate|sophos|chasis|cpd|nas|sai|ups)\\b"},
+      "etiquetas": {"critico": "si"} },
+    { "cuando": {"nombre": "(?i)\\b(quitado|baja|retirado|no usar)\\b"},
+      "etiquetas": {"estado": "retirado"},
+      "sondas": [] }
+  ],
+
+  "por_defecto": {
+    "etiquetas": {"sede": "sin clasificar", "funcion": "otros"},
+    "sondas": ["icmp"]
+  }
+}

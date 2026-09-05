@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitor de red</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<header>
+  <img src="logo.jpg" id="logo" alt="" onerror="this.style.display='none'">
+  <h1 id="titulo">MONITOR DE RED</h1>
+  <div class="chips">
+    <div class="chip azul"><span>Equipos</span><b id="c-total">–</b></div>
+    <div class="chip ok"><span>Activos</span><b id="c-ok">–</b></div>
+    <div class="chip aviso"><span>Aviso</span><b id="c-aviso">–</b></div>
+    <div class="chip error"><span>Caídos</span><b id="c-caido">–</b></div>
+    <div class="chip mant"><span>Mantenim.</span><b id="c-mant">–</b></div>
+    <div class="chip error"><span>Críticos</span><b id="c-criticos">–</b></div>
+    <div id="reloj">--:--:--</div>
+    <button id="btn-csv" title="Subir el Devices.csv exportado del Dude">Actualizar inventario</button>
+    <button id="btn-tv" title="Pantalla completa (tecla T)">Modo TV</button>
+  </div>
+</header>
+
+<div id="aviso-conexion" class="banner"></div>
+<div id="aviso-accion" class="banner"></div>
+<div id="rejilla"></div>
+<footer id="pie">Cargando…</footer>
+
+<input type="file" id="fichero-csv" accept=".csv,text/csv" hidden>
+<div id="menu-mant"></div>
+
+<script src="panel.js"></script>
+</body>
+</html>

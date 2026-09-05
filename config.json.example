@@ -1,0 +1,47 @@
+{
+  "_comentario": "Las claves que empiezan por guion bajo se ignoran: sirven para dejar notas.",
+
+  "puerto": 8082,
+  "titulo": "MONITOR DE RED",
+  "intervalo_segundos": 60,
+  "hilos": 128,
+
+  "_sondeo": "ping_timeout_ms por debajo de 500 empieza a dar falsos caidos en enlaces lentos.",
+  "ping_timeout_ms": 800,
+  "ping_reintentos": 1,
+  "ping_intervalo_ms": 10,
+  "timeouts": {"tcp": 3, "http": 3, "snmp": 2, "tls": 4, "dns": 3},
+  "comunidad_snmp": "CAMBIAME",
+  "dias_aviso_certificado": 21,
+
+  "_agrupacion": "agrupar_por es la etiqueta que decide las tarjetas; desglosar_por, los bloques de dentro. Cambiando esto ves la misma red por sede, por funcion o por lo que definas en reglas.json.",
+  "agrupar_por": "sede",
+  "desglosar_por": "funcion",
+  "orden_grupos": ["CENTRAL", "SEDE-A", "SEDE-B", "SEDE-C",
+                   "ENLACES", "sin clasificar"],
+
+  "_semaforo": "Rojo: cae un equipo critico o el % de activos baja de umbral_rojo. Ambar: hay al menos problemas_para_aviso equipos con incidencia. Verde: el resto.",
+  "umbral_rojo": 85,
+  "problemas_para_aviso": 3,
+
+  "_historico": "Las muestras se purgan a los dias indicados; los eventos duran mucho mas porque ocupan poco y son los que dan los informes.",
+  "dias_muestras": 60,
+  "dias_eventos": 400,
+
+  "_dude": "Inventario automatico. La base del Dude es SQLite y se trae por FTP: no hay que exportar ningun CSV a mano. El usuario necesita la politica 'ftp' en RouterOS. Con host vacio queda desactivado. horas_refresco 0 tambien lo apaga.",
+  "dude": {
+    "host": "",
+    "puerto": 21,
+    "usuario": "CAMBIAME",
+    "password": "PON_AQUI_LA_CONTRASENA",
+    "horas_refresco": 24,
+    "carpeta_copia": "/opt/network-status-dashboard/copia-dude"
+  },
+
+  "_permisos": "Pon a false lo que no quieras que se pueda hacer desde el navegador.",
+  "permitir_subida_csv": true,
+  "permitir_mantenimiento": true,
+
+  "_simulado": "true genera estados de mentira para desarrollar sin la red delante. NUNCA en produccion.",
+  "simulado": false
+}
