@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff
+      - name: Lint (ruff)
+        run: ruff check panel.py monitor/ explorar_db_dude.py parsear_dude.py
+      - name: Syntax check
+        run: python -m compileall -q panel.py monitor explorar_db_dude.py parsear_dude.py
+      - name: Validate example configs
+        run: |
+          python -c "import json; json.load(open('config.json.example'))"
+          python -c "import json; json.load(open('reglas.json.example'))"
+
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Simulated inventory must classify without a real network
+        run: |
+          cp config.json.example config.json
+          cp reglas.json.example reglas.json
+          python3 panel.py simular
+          python3 panel.py reglas
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure no real config is committed
+        run: |
+          test ! -f config.json || { echo "config.json no debe estar en el repo"; exit 1; }
+          test ! -f reglas.json || { echo "reglas.json no debe estar en el repo"; exit 1; }
